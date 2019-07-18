@@ -1,0 +1,7 @@
+D:\Projetos\Mestrado\Plash\Plash\bin\Debug\Plash.exe.config
+D:\Projetos\Mestrado\Plash\Plash\bin\Debug\Plash.exe
+D:\Projetos\Mestrado\Plash\Plash\bin\Debug\Plash.pdb
+D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.csprojAssemblyReference.cache
+D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.csproj.CoreCompileInputs.cache
+D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.exe
+D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.pdb
