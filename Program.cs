@@ -39,6 +39,10 @@ namespace Plash
         public double[] FLT_Arr_ESSup; //Downstream Flow
         public double[] FLT_Arr_Infiltration; //Infiltration in Time Step
         public double[] FLT_Arr_Infiltration_Cumulative; //Total Infiltration
+        public double[] FLT_Arr_IAE;
+        public double[] FLT_Arr_TP;
+        public double[] FLT_Arr_IAEAdim;
+        public double[] FLT_Arr_TPAdim;
 
         //Shallow Soil Reservoir
         public double[] FLT_Arr_EPSol; //Potential Evapotranspiration
@@ -65,12 +69,12 @@ namespace Plash
         //Parameters
         public double FLT_TimeStep = 1;
         public double FLT_AD = 18.5;    //Watershed Area (km2)
-        public double FLT_AI = 0.1;     //Impervious Area Fraction (km2/km2)
+        public double FLT_AI = 0.05;     //Impervious Area Fraction (km2/km2)
         public double FLT_DI = 5;       //Maximum Impervious Detention (mm)
-        public double FLT_AP = 0.95;    //Pervious Area Fraction (km2/km2)
+        public double FLT_AP = 0.9;    //Pervious Area Fraction (km2/km2)
         public double FLT_IP = 3;       //Maximum Interception (mm)
         public double FLT_DP = 6;       //Maximum Pervious Detention (mm)
-        public double FLT_KSup = 50;    //Surface Reservoir Decay (h)
+        public double FLT_KSup = 12;    //Surface Reservoir Decay (h)
         public double FLT_CS = 10;      //Soi Saturation Capacity (mm)
         public double FLT_CC = 0.3;     //Field Capacity (%)
         public double FLT_CR = 0.05;    //Recharge Capacity (%)
@@ -120,7 +124,10 @@ namespace Plash
             FLT_Arr_ESSup = new double[length];
             FLT_Arr_Infiltration = new double[length];
             FLT_Arr_Infiltration_Cumulative = new double[length];
-
+            FLT_Arr_IAE = new double[length];
+            FLT_Arr_TP = new double[length];
+            FLT_Arr_IAEAdim = new double[length];
+            FLT_Arr_TPAdim = new double[length];
             
             FLT_Arr_EPSol = new double[length];
             FLT_Arr_EESol = new double[length];
@@ -148,11 +155,7 @@ namespace Plash
 
         }
 
-        static void GreenAmpt()
-        {
-
-        }
-
+        
     }
 
 
@@ -168,27 +171,16 @@ namespace Plash
 
             Simulation Sim = new Simulation();
 
-            Console.WriteLine("Parametros Originais pre:");
-            Console.WriteLine("KSup = {0}", Sim.FLT_KSup);
-            Console.WriteLine("KSub = {0}", Sim.FLT_KSub);
-            Console.WriteLine("KCan = {0}", Sim.FLT_KCan);
-            Console.WriteLine("PP = {0}", Sim.FLT_PP);
-
-            Console.WriteLine("Parametros Auxiliares pre:");
-            Console.WriteLine("kSup = {0}", Sim.FLT_kSup);
-            Console.WriteLine("kSub = {0}", Sim.FLT_kSub);
-            Console.WriteLine("kCan = {0}", Sim.FLT_kCan);
-            Console.WriteLine("pp = {0}", Sim.FLT_pp);
                         
             Sim.AuxiliaryParameters();
-
-            Console.WriteLine("Parametros Originais pos:");
+            int SimulationLength = 100;
+            Console.WriteLine("Parametros Originais:");
             Console.WriteLine("KSup = {0}", Sim.FLT_KSup);
             Console.WriteLine("KSub = {0}", Sim.FLT_KSub);
             Console.WriteLine("KCan = {0}", Sim.FLT_KCan);
             Console.WriteLine("PP = {0}", Sim.FLT_PP);
 
-            Console.WriteLine("Parametros Auxiliares pos:");
+            Console.WriteLine("Parametros Auxiliares:");
             Console.WriteLine("kSup = {0}", Sim.FLT_kSup);
             Console.WriteLine("kSub = {0}", Sim.FLT_kSub);
             Console.WriteLine("kCan = {0}", Sim.FLT_kCan);
@@ -196,20 +188,27 @@ namespace Plash
 
             Console.ReadKey();
 
-            Sim.DTE_Arr_TimeSeries = new DateTime[100];
+            Sim.DTE_Arr_TimeSeries = new DateTime[SimulationLength];
             //Sim.FLT_Arr_PrecipSeries = new double[20];
             //Sim.FLT_Arr_EPSeries = new double[20];
             //Sim.FLT_Arr_QtObsSeries = new double[20];
 
-            Sim.SetArrays(100);
+            Sim.SetArrays(SimulationLength);
 
             //Initializations
-            Sim.FLT_Arr_RImp[0] = 0;
-            Sim.FLT_Arr_RInt[0] = 0;
-            Sim.FLT_Arr_RSup[0] = 0;
-            Sim.FLT_Arr_RSol[0] = Sim.FLT_UI * Sim.FLT_CS;
-            Sim.FLT_Arr_RSub[0] = (Sim.FLT_Arr_QtObsSeries[0] / (1 - Sim.FLT_kSub)) * (3.6 / Sim.FLT_AD);
-            Sim.FLT_Arr_RCan[0] = 0;
+            double RImp0 = 0;
+            double RInt0 = 0;
+            double RSup0 = 0;
+            double RSol0 = Sim.FLT_UI * Sim.FLT_CS;
+            double RSub0 = (Sim.FLT_Arr_QtObsSeries[0] / (1 - Sim.FLT_kSub)) * (3.6 / Sim.FLT_AD);
+            double RCan0 = 0;
+
+            Sim.FLT_Arr_RImp[0] = RImp0;
+            Sim.FLT_Arr_RInt[0] = RInt0;
+            Sim.FLT_Arr_RSup[0] = RSup0;
+            Sim.FLT_Arr_RSol[0] = RSol0;
+            Sim.FLT_Arr_RSub[0] = RSub0;
+            Sim.FLT_Arr_RCan[0] = RCan0;
 
 
             Sim.DTE_Arr_TimeSeries[0] = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
@@ -219,24 +218,26 @@ namespace Plash
                 Sim.DTE_Arr_TimeSeries[i] = Sim.DTE_Arr_TimeSeries[0].AddHours(Sim.FLT_TimeStep * i);
                 //Console.WriteLine("i: {0}, Data: {1}", i, Sim.DTE_Arr_TimeSeries[i]);
             }
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < SimulationLength; i++)
             {
                 //Console.WriteLine("Data: {0}, Prec: {1}; EP: {2}; Q Obs: {3}", Sim.DTE_Arr_TimeSeries[i], Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i], Sim.FLT_Arr_QtObsSeries[i]);
-
+                #region Impervious Reservoir
                 //Impervious Reservoir                
-                Sim.FLT_Arr_ERImp[i] = Math.Min( (i > 0 ? Sim.FLT_Arr_RImp[i - 1] : Sim.FLT_Arr_RImp[i]) + Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i]);
-                Sim.FLT_Arr_ESImp[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RImp[i - 1] : Sim.FLT_Arr_RImp[i]) + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERImp[i] - Sim.FLT_DI, 0);
+                Sim.FLT_Arr_ERImp[i] = Math.Min( (i > 0 ? Sim.FLT_Arr_RImp[i - 1] : RImp0) + Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i]);
+                Sim.FLT_Arr_ESImp[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RImp[i - 1] : RImp0) + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERImp[i] - Sim.FLT_DI, 0);
                 if(i > 0)
                 {
                     Sim.FLT_Arr_RImp[i] = Sim.FLT_Arr_RImp[i-1] + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERImp[i] - Sim.FLT_Arr_ESImp[i];
                 }
 
-                
-                //Console.WriteLine("ERImp: {0} mm, ESImp: {1} mm, RImp: {2} mm", Sim.FLT_Arr_ERImp[i], Sim.FLT_Arr_ESImp[i], Sim.FLT_Arr_RImp[i]);
 
+                //Console.WriteLine("ERImp: {0} mm, ESImp: {1} mm, RImp: {2} mm", Sim.FLT_Arr_ERImp[i], Sim.FLT_Arr_ESImp[i], Sim.FLT_Arr_RImp[i]);
+                #endregion Impervious Reservoir
+
+                #region Interception Reservoir
                 //Interception Reservoir
-                Sim.FLT_Arr_ERInt[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RInt[i - 1] : Sim.FLT_Arr_RInt[i]) + Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i]);
-                Sim.FLT_Arr_ESInt[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RInt[i - 1] : Sim.FLT_Arr_RInt[i]) + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERInt[i] - Sim.FLT_IP, 0);
+                Sim.FLT_Arr_ERInt[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RInt[i - 1] : RInt0) + Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i]);
+                Sim.FLT_Arr_ESInt[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RInt[i - 1] : RInt0) + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERInt[i] - Sim.FLT_IP, 0);
                 if(i > 0)
                 {
                     Sim.FLT_Arr_RInt[i] = Sim.FLT_Arr_RInt[i - 1] + Sim.FLT_Arr_PrecipSeries[i] - Sim.FLT_Arr_ERInt[i] - Sim.FLT_Arr_ESInt[i];
@@ -244,23 +245,127 @@ namespace Plash
 
                 //Console.WriteLine("ERInt: {0} mm, ESInt: {1} mm, RInt: {2} mm", Sim.FLT_Arr_ERInt[i], Sim.FLT_Arr_ESInt[i], Sim.FLT_Arr_RInt[i]);
 
+                #endregion Interception Reservoir
+
+                #region Surface Reservoir
                 //Surface Reservoir
                 Sim.FLT_Arr_EESup[i] = Sim.FLT_Arr_ESImp[i] * (Sim.FLT_AI / Sim.FLT_AP) + Sim.FLT_Arr_ESInt[i];
                 Sim.FLT_Arr_EPSup[i] = Sim.FLT_Arr_EPSeries[i] - Sim.FLT_Arr_ERInt[i];
-                Sim.FLT_Arr_ERSup[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RSup[i - 1] : Sim.FLT_Arr_RSup[i]) + Sim.FLT_Arr_EESup[i], Sim.FLT_Arr_EPSup[i]);
-                Sim.FLT_Arr_Infiltration[i] = 0; //METODO DA INFILTRAÇÃO
-                Sim.FLT_Arr_ESSup[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RSup[i - 1] : Sim.FLT_Arr_RSup[i]) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i] - Sim.FLT_Arr_Infiltration[i] - Sim.FLT_DP, 0) * (1 - Sim.FLT_kSup);
+                Sim.FLT_Arr_ERSup[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RSup[i - 1] : RSup0) + Sim.FLT_Arr_EESup[i], Sim.FLT_Arr_EPSup[i]);
+
+                #region Infiltration
+
+                //Infiltration
+                double FLT_S2 = 2 * Sim.FLT_CH * (Sim.FLT_PS - Sim.FLT_UI) * (Sim.FLT_FS + (i > 0 ? Sim.FLT_Arr_RSup[i - 1] : RSup0) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i]);
+                double FLT_it = (FLT_S2 / (2 * (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0))) + Sim.FLT_CH;
+                double FLT_it1 = (FLT_S2 / (2 * ((i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0)+Sim.FLT_Arr_PrecipSeries[i]))) + Sim.FLT_CH;
+                double FLT_Puddling = (Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i]) / Sim.FLT_TimeStep;
+                if (FLT_it <= FLT_Puddling)
+                {
+                    Sim.FLT_Arr_IAE[i] = i > 0 ? Sim.FLT_Arr_IAE[i - 1] : 0;
+                    Sim.FLT_Arr_TP[i] = 0;
+                }
+                if(FLT_it1 < FLT_Puddling)
+                {
+                    Sim.FLT_Arr_IAE[i] = FLT_S2 / (2 * (FLT_Puddling - Sim.FLT_CH));
+                    Sim.FLT_Arr_TP[i] = Sim.FLT_Arr_IAE[i] - (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) / FLT_Puddling;
+                }
+                Sim.FLT_Arr_IAEAdim[i] = 2 * Sim.FLT_CH * Sim.FLT_Arr_IAE[i] / FLT_S2;
+                Sim.FLT_Arr_TPAdim[i] = 2 * Math.Pow(Sim.FLT_CH, 2) * (Sim.FLT_TimeStep - Sim.FLT_Arr_TP[i]) / FLT_S2;
+                double FLT_Sigma = Math.Sqrt(2 * (Sim.FLT_Arr_TPAdim[i] + Sim.FLT_Arr_IAEAdim[i] - Math.Log(1 + Sim.FLT_Arr_IAEAdim[i])));
+                double FLT_Sigma_1 = (Math.Pow(FLT_Sigma, 2) / 2);
+                double FLT_Sigma_2 = Math.Pow((1 + FLT_Sigma / 6), -1);
+                double FLT_W_1 = (FLT_Sigma_1 + Math.Log(1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2)) / (Math.Pow((1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2), -1) - 1);
+                
+                if(FLT_it1 > FLT_Puddling)
+                {
+                    Sim.FLT_Arr_Infiltration_Cumulative[i] = (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i];
+                }
+                else
+                {
+                    Sim.FLT_Arr_Infiltration_Cumulative[i] = (FLT_S2 * (-1 - FLT_W_1)) / (2 * Sim.FLT_CH);
+                }
+                Sim.FLT_Arr_Infiltration[i] = Math.Max(Sim.FLT_Arr_Infiltration_Cumulative[i] - (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0), 0);
+
+                //Console.WriteLine("S2: {0}, it: {1}, it+1: {2}, puddling: {3}, IAE: {4}, TP: {5}, IAEAdim: {6}, TPAdim: {7}, Sigma: {8}, W1: {9}, IA: {10}, I: {11}", 
+                //    Math.Round(FLT_S2,3), 
+                //    Math.Round(FLT_it, 3), 
+                //    Math.Round(FLT_it1, 3), 
+                //    Math.Round(FLT_Puddling, 3), 
+                //    Math.Round(Sim.FLT_Arr_IAE[i], 3), 
+                //    Math.Round(Sim.FLT_Arr_TP[i], 3), 
+                //    Math.Round(Sim.FLT_Arr_IAEAdim[i], 3), 
+                //    Math.Round(Sim.FLT_Arr_TPAdim[i],3),
+                //    Math.Round(FLT_Sigma,3),
+                //    Math.Round(FLT_W_1, 3),
+                //    Math.Round(Sim.FLT_Arr_Infiltration_Cumulative[i], 3),
+                //    Math.Round(Sim.FLT_Arr_Infiltration[i],3));
+
+                //END Infiltration
+
+                #endregion Infiltration
+
+                Sim.FLT_Arr_ESSup[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RSup[i - 1] : RSup0) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i] - Sim.FLT_Arr_Infiltration[i] - Sim.FLT_DP, 0) * (1 - Sim.FLT_kSup);
                 if (i > 0)
                 {
                     Sim.FLT_Arr_RSup[i] = Sim.FLT_Arr_RSup[i - 1] + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i] - Sim.FLT_Arr_Infiltration[i] - Sim.FLT_Arr_ESSup[i];
                 }
 
+                //Console.WriteLine("EESup: {0}, EPSup: {1}, ERSup: {2}, I: {3}, ESSup: {4}, RSup: {5}", Sim.FLT_Arr_EESup[i], Sim.FLT_Arr_EPSup[i], Sim.FLT_Arr_ERSup[i], Sim.FLT_Arr_Infiltration[i], Sim.FLT_Arr_ESSup[i], Sim.FLT_Arr_RSup[i]);
+                #endregion Surface Reservoir
 
-                Console.WriteLine("EESup: {0}, EPSup: {1}, ERSup: {2}, I: {3}, ESSup: {4}, RSup: {5}", Sim.FLT_Arr_EESup[i], Sim.FLT_Arr_EPSup[i], Sim.FLT_Arr_ERSup[i], Sim.FLT_Arr_Infiltration[i], Sim.FLT_Arr_ESSup[i], Sim.FLT_Arr_RSup[i]);
+                #region Soil Reservoir
+                //Soil Reservoir
+                Sim.FLT_Arr_EESol[i] = Sim.FLT_Arr_Infiltration[i];
+                Sim.FLT_Arr_EPSol[i] = Sim.FLT_Arr_EPSup[i] - Sim.FLT_Arr_ERSup[i];
+                Sim.FLT_Arr_ERSol[i] = Sim.FLT_Arr_EPSol[i] * ((i > 0 ? Sim.FLT_Arr_RSol[i - 1] : RSol0) / Sim.FLT_CS);
+                Sim.FLT_Arr_ESSol[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RSol[i - 1] : RSol0) - Sim.FLT_CC * Sim.FLT_CS, 0) * (Sim.FLT_CR * ((i > 0 ? Sim.FLT_Arr_RSol[i - 1] : RSol0) / Sim.FLT_CS));
+                if (i > 0) {
+                    Sim.FLT_Arr_RSol[i] = Sim.FLT_Arr_RSol[i - 1] + Sim.FLT_Arr_EESol[i] - Sim.FLT_Arr_ERSol[i] - Sim.FLT_Arr_ESSol[i];
+                }
 
+                //Console.WriteLine("EESol: {0}, EPSol: {1}, ERSol: {2}, ESSol: {3}, RSol: {4}", Sim.FLT_Arr_EESol[i], Sim.FLT_Arr_EPSol[i], Sim.FLT_Arr_ERSol[i], Sim.FLT_Arr_ESSol[i], Sim.FLT_Arr_RSol[i]);
 
+                #endregion Soil Reservoir
 
+                #region Aquifer Reservoir
+                //Aquifer Reservoir
+                Sim.FLT_Arr_EESub[i] = Sim.FLT_Arr_ESSol[i] * Sim.FLT_AP;
+                Sim.FLT_Arr_PPSub[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RSub[i - 1] : RSub0) + Sim.FLT_Arr_EESub[i], Sim.FLT_pp);
+                Sim.FLT_Arr_ESSub[i] = ((i > 0 ? Sim.FLT_Arr_RSub[i - 1] : RSub0) + Sim.FLT_Arr_EESub[i] - Sim.FLT_Arr_PPSub[i]) * (1 - Sim.FLT_kSub);
+                if (i > 0)
+                {
+                    Sim.FLT_Arr_RSub[i] = Sim.FLT_Arr_RSub[i - 1] + Sim.FLT_Arr_EESub[i] - Sim.FLT_Arr_PPSub[i] - Sim.FLT_Arr_ESSub[i];
+                }
 
+                //Console.WriteLine("EESub: {0}, PPSub: {1}, ESSub: {2}, RSub: {3}, QSub: {4}", Sim.FLT_Arr_EESub[i], Sim.FLT_Arr_PPSub[i], Sim.FLT_Arr_ESSub[i], Sim.FLT_Arr_RSub[i], Sim.FLT_Arr_ESSub[i] * (Sim.FLT_AD / (3.6 * Sim.FLT_TimeStep)));
+
+                #endregion Aquifer Reservoir
+
+                #region Channel Reservoir
+
+                //Channel Reservoir
+                Sim.FLT_Arr_EECan[i] = Sim.FLT_Arr_PrecipSeries[i] + Sim.FLT_Arr_ESSup[i] * (Sim.FLT_AP / (1 - Sim.FLT_AP - Sim.FLT_AI));
+                Sim.FLT_Arr_ERCan[i] = Math.Min((i > 0 ? Sim.FLT_Arr_RCan[i - 1] : RCan0) + Sim.FLT_Arr_EECan[i], Sim.FLT_Arr_EPSeries[i]);
+                Sim.FLT_ARR_ESCan[i] = Math.Max((i > 0 ? Sim.FLT_Arr_RCan[i - 1] : RCan0) + Sim.FLT_Arr_EECan[i] - Sim.FLT_Arr_ERCan[i], 0) * (1 - Sim.FLT_kCan);
+                if (i > 0)
+                {
+                    Sim.FLT_Arr_RCan[i] = Sim.FLT_Arr_RCan[i - 1] + Sim.FLT_Arr_EECan[i] - Sim.FLT_Arr_ERCan[i] - Sim.FLT_ARR_ESCan[i];
+                }
+
+                //Console.WriteLine("EECan: {0}, ERCan: {1}, ESCan: {2}, RCan: {3}", Sim.FLT_Arr_EECan[i], Sim.FLT_Arr_ERCan[i], Sim.FLT_ARR_ESCan[i], Sim.FLT_Arr_RCan[i]);
+
+                #endregion Channel Reservoir
+
+                #region Total Flow
+                Sim.FLT_Arr_QBas_Calc[i] = Sim.FLT_Arr_ESSub[i] * (Sim.FLT_AD / (3.6 * Sim.FLT_TimeStep));
+                Sim.FLT_Arr_QSup_Calc[i] = Sim.FLT_ARR_ESCan[i] * (Sim.FLT_AD / (3.6 * Sim.FLT_TimeStep)) * (1 - Sim.FLT_AP - Sim.FLT_AI);
+                Sim.FLT_Arr_Qt_Calc[i] = Sim.FLT_Arr_QSup_Calc[i] + Sim.FLT_Arr_QBas_Calc[i];
+                //Console.WriteLine("QBas: {0}, QSup: {1}, Qt: {2}", Math.Round(Sim.FLT_Arr_QBas_Calc[i], 3), Math.Round(Sim.FLT_Arr_QSup_Calc[i], 3), Math.Round(Sim.FLT_Arr_Qt_Calc[i],3));
+
+                Console.WriteLine("Diferenca Absoluta:{0}", Math.Round(Sim.FLT_Arr_Qt_Calc[i] - Sim.FLT_Arr_QtObsSeries[i], 3));
+
+                #endregion Total Flow
             }
             
 
