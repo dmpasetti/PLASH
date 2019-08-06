@@ -16,6 +16,8 @@ namespace Plash
         public double FLT_Kw;
 
         public double[] FLT_Arr_Washoff;
+        public double[] FLT_Arr_Buildup;
+
 
         private enum BuildupMethod
         {
@@ -81,15 +83,17 @@ namespace Plash
 
 
 
-        public static void fncBuildupWashoffProcess(Buildup_Washoff Sim, double[] FLT_Arr_Precipitation, double[] FLT_Arr_SurfaceFlow, double FLT_WatershedArea, double FLT_InitialBuildup, int ID_BuildupMethod, int ID_WashoffMethod, double FLT_Timestep)
+        public static void fncBuildupWashoffProcess(Buildup_Washoff Sim, double[] FLT_Arr_SurfaceFlow, double FLT_WatershedArea, double FLT_InitialBuildup, int ID_BuildupMethod, int ID_WashoffMethod, double FLT_Timestep, double FLT_BuildupThreshold)
         {
             Sim.FLT_Arr_Washoff = new double[FLT_Arr_SurfaceFlow.Length];
+            Sim.FLT_Arr_Buildup = new double[FLT_Arr_SurfaceFlow.Length];
 
 
             bool BOOL_Buildup;
             double FLT_BuildupSpecific = 0;
             double FLT_BuildupMass = FLT_InitialBuildup;
             double FLT_WashoffRate = 0;
+            
 
             BuildupMethod BMethod = (BuildupMethod)ID_BuildupMethod;
             WashoffMethod WMethod = (WashoffMethod)ID_WashoffMethod;
@@ -112,7 +116,7 @@ namespace Plash
 
 
             for (int i = 0; i < Sim.FLT_Arr_Washoff.Length; i++) {
-                BOOL_Buildup = FLT_Arr_Precipitation[i] > 0 ? false : true;
+                BOOL_Buildup = FLT_Arr_SurfaceFlow[i] > FLT_BuildupThreshold ? false : true;
                 if (BOOL_Buildup)
                 {
                     FLT_BuildupTime += FLT_Timestep;
@@ -131,7 +135,7 @@ namespace Plash
                         default:
                             break;                        
                     }
-                    FLT_BuildupMass = FLT_BuildupSpecific * FLT_WatershedArea;                               
+                    FLT_BuildupMass = FLT_BuildupSpecific * FLT_WatershedArea;           
                 }
                 else
                 {
@@ -168,6 +172,7 @@ namespace Plash
                             break;
                     }
                 }
+                Sim.FLT_Arr_Buildup[i] = FLT_BuildupMass;
                 Console.WriteLine("i: {5}, Bool_Buildup: {0}, BuildupRate: {1}, Buildup Total: {2}, Washoff: {3}, Time: {4}", 
                     BOOL_Buildup, 
                     Math.Round(FLT_BuildupSpecific,3), 

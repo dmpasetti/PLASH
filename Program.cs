@@ -48,11 +48,11 @@ namespace Plash
                 FLT_BMax = 10,
                 FLT_Kb = 0.1,
                 FLT_Nb = 1,
-                FLT_Kw = 1,
+                FLT_Kw = 0.1,
                 FLT_Nw = 1
             };
 
-            Buildup_Washoff.fncBuildupWashoffProcess(BuWoModel, Sim.FLT_Arr_PrecipSeries, Sim.FLT_Arr_ESSup, Sim.FLT_AD, 0, 2, 1, Sim.FLT_TimeStep);
+            Buildup_Washoff.fncBuildupWashoffProcess(BuWoModel, Sim.FLT_Arr_ESSup, Sim.FLT_AD, 0, 2, 1, Sim.FLT_TimeStep, 0.5);
 
             //double[] FLT_Arr_WashoffResults = BuWoModel.fncBuildupWashoffProcess(Sim.FLT_Arr_PrecipSeries, Sim.FLT_Arr_ESSup, Sim.FLT_AD, 0, 2, 1, Sim.FLT_TimeStep);
 
@@ -90,7 +90,7 @@ namespace Plash
 
                 var HeaderRow2 = new List<string[]>()
                 {
-                    new string[] {"Precipitation", "Surface Flow", "Washoff"},
+                    new string[] {"Precipitation", "Surface Flow", "Buildup", "Washoff"},
                 };
 
                 string headerRange2 = "A1:" + Char.ConvertFromUtf32(HeaderRow2[0].Length + 64) + 1;
@@ -103,12 +103,12 @@ namespace Plash
 
                 for (int i = 0; i < SimulationLength; i++)
                 {
-                    cellData2.Add(new object[] { Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_ESSup[i], BuWoModel.FLT_Arr_Washoff[i] });
+                    cellData2.Add(new object[] { Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_ESSup[i], BuWoModel.FLT_Arr_Buildup[i], BuWoModel.FLT_Arr_Washoff[i] });
                 }
 
                 worksheet.Cells[2, 1].LoadFromArrays(cellData2);
 
-                FileInfo excelFile = new FileInfo(@"D:\test2.xlsx");
+                FileInfo excelFile = new FileInfo(@"D:\data.xlsx");
                 excel.SaveAs(excelFile);
             }
 
