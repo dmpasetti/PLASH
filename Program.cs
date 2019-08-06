@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.IO;
+
+using OfficeOpenXml;
+
 
 namespace Plash
 {   
@@ -10,7 +14,7 @@ namespace Plash
 
     class Program
     {
-        
+
         static void Main(string[] args)
         {
             // The code provided will print ‘Hello World’ to the console.
@@ -33,7 +37,9 @@ namespace Plash
 
             PLASH.Run(Sim, SimulationLength);
             
-           
+            
+            
+
             Console.WriteLine("");
             Console.ReadKey();
 
@@ -51,6 +57,65 @@ namespace Plash
             //double[] FLT_Arr_WashoffResults = BuWoModel.fncBuildupWashoffProcess(Sim.FLT_Arr_PrecipSeries, Sim.FLT_Arr_ESSup, Sim.FLT_AD, 0, 2, 1, Sim.FLT_TimeStep);
 
             Console.ReadKey();
+
+            using (ExcelPackage excel = new ExcelPackage())
+            {
+                excel.Workbook.Worksheets.Add("Results_PLASH");
+                excel.Workbook.Worksheets.Add("Results_BuWo");
+
+                var HeaderRow1 = new List<string[]>()
+                {
+                    new string[] {"Precipitation", "Evapotranspiration", "Observed Flow",
+                        "Impervious Reservoir", "Interception Reservoir", "Surface Reservoir", "Soil Reservoir", "Aquifer Reservoir", "Channel Reservoir",
+                    "Calculated Basic Flow", "Calculated Surface Flow", "Calculated Total Flow"},
+                };
+
+                string headerRange1 = "A1:" + Char.ConvertFromUtf32(HeaderRow1[0].Length + 64) + 1;
+
+                var worksheet = excel.Workbook.Worksheets["Results_PLASH"];
+
+                worksheet.Cells[headerRange1].LoadFromArrays(HeaderRow1);
+
+                List<object[]> cellData1 = new List<object[]>();
+
+                for (int i = 0; i < SimulationLength; i++)
+                {
+                    cellData1.Add(new object[] { Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_EPSeries[i], Sim.FLT_Arr_QtObsSeries[i],
+                    Sim.FLT_Arr_RImp[i], Sim.FLT_Arr_RInt[i], Sim.FLT_Arr_RSup[i], Sim.FLT_Arr_RSol[i], Sim.FLT_Arr_RSub[i], Sim.FLT_Arr_RCan[i],
+                    Sim.FLT_Arr_QBas_Calc[i], Sim.FLT_Arr_QSup_Calc[i], Sim.FLT_Arr_Qt_Calc[i]});
+                }
+
+                worksheet.Cells[2, 1].LoadFromArrays(cellData1);
+
+
+                var HeaderRow2 = new List<string[]>()
+                {
+                    new string[] {"Precipitation", "Surface Flow", "Washoff"},
+                };
+
+                string headerRange2 = "A1:" + Char.ConvertFromUtf32(HeaderRow2[0].Length + 64) + 1;
+
+                worksheet = excel.Workbook.Worksheets["Results_BuWo"];
+
+                worksheet.Cells[headerRange2].LoadFromArrays(HeaderRow2);
+
+                List<object[]> cellData2 = new List<object[]>();
+
+                for (int i = 0; i < SimulationLength; i++)
+                {
+                    cellData2.Add(new object[] { Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_ESSup[i], BuWoModel.FLT_Arr_Washoff[i] });
+                }
+
+                worksheet.Cells[2, 1].LoadFromArrays(cellData2);
+
+                FileInfo excelFile = new FileInfo(@"D:\test2.xlsx");
+                excel.SaveAs(excelFile);
+            }
+
+            Console.WriteLine("Excel processed");
+
+            Console.ReadKey();
+
 
 
             // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 

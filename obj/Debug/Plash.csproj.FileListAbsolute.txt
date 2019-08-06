@@ -5,3 +5,6 @@ D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.csprojAssemblyReference.cache
 D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.csproj.CoreCompileInputs.cache
 D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.exe
 D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.pdb
+D:\Projetos\Mestrado\Plash\Plash\bin\Debug\EPPlus.dll
+D:\Projetos\Mestrado\Plash\Plash\bin\Debug\EPPlus.xml
+D:\Projetos\Mestrado\Plash\Plash\obj\Debug\Plash.csproj.CopyComplete

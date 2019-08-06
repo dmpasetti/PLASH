@@ -84,7 +84,7 @@ namespace Plash
         public double FLT_CH = 0.05;    //Hydraulic Conductivity (mm/h)
         public double FLT_FS = 50;      //Soil Capilarity Factor (mm)
         public double FLT_PS = 0.5;     //Soil Porosity (cm3/cm3)
-        public double FLT_UI = 0.2;     //Initial Moisture (cm3/cm3)
+        public double FLT_UI = 0.495;     //Initial Moisture (cm3/cm3)
 
         public double FLT_kSup;
         public double FLT_kSub;
