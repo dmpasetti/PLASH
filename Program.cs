@@ -58,6 +58,8 @@ namespace Plash
 
             Console.ReadKey();
 
+
+            #region Excel Output
             using (ExcelPackage excel = new ExcelPackage())
             {
                 excel.Workbook.Worksheets.Add("Results_PLASH");
@@ -113,6 +115,8 @@ namespace Plash
             }
 
             Console.WriteLine("Excel processed");
+
+            #endregion Excel Output
 
             Console.ReadKey();
 

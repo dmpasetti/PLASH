@@ -8,15 +8,22 @@ namespace Plash
 {
     class Buildup_Washoff
     {
-        public double FLT_BMax;
-        public double FLT_Nb;
-        public double FLT_Kb;
+        public double FLT_BMax; //Maximum Buildup, normalized (kg/km²)
+        public double FLT_Nb; //Buildup Exponent  (-). Nb <= 1 
+        public double FLT_Kb;/*Buildup rate constant (Varies.   Pow: kg/km²*d^-Nb; 
+                                                                Exp: d^-1; 
+                                                                Sat: d.)*/
 
-        public double FLT_Nw;
-        public double FLT_Kw;
+        public double FLT_Nw; //Washoff exponent (-)
+        public double FLT_Kw; /*Washoff rate constante (Varies. Exp:  (mm/h)*h^-1
+                                                                Rating: (Kg/h)*(L/h)^-Nw
+                                                                EMC: mg/m³
+        */
 
-        public double[] FLT_Arr_Washoff;
-        public double[] FLT_Arr_Buildup;
+        public double[] FLT_Arr_Washoff; //Washoff time series in the entire timestep (kg)
+        public double[] FLT_Arr_Buildup; //Buildup time series, non-normalized (kg)
+
+        public double FLT_AreaRatio;        
 
 
         private enum BuildupMethod
@@ -33,7 +40,7 @@ namespace Plash
             EMC = 3
         }
 
-
+        #region Time From Buildup Equations
         public double TimeFromBuildup_Pow(double FLT_Buildup)
         {
             return Math.Pow(FLT_Buildup / FLT_Kb, (1 / FLT_Nb));
@@ -48,6 +55,9 @@ namespace Plash
         {
             return (FLT_Buildup * FLT_Kb) / (FLT_BMax - FLT_Buildup);
         }
+        #endregion Time From Buildup Equations
+
+        #region Buildup Equations
 
         public double Buildup_Pow(double FLT_Time)
         {
@@ -63,23 +73,48 @@ namespace Plash
         {
             return (FLT_BMax * FLT_Time) / (FLT_Kb + FLT_Time);
         }
+        #endregion BuildupEquations
 
-
+        #region Washoff Equations
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="FLT_SurfaceFlow"></param>
+        /// Surface Flow computed from hydrological model. Unit: mm
+        /// <param name="FLT_BuildupMass"></param>
+        /// Total buildup in timestep. Unit: kg
+        /// <returns></returns>
         public double Washoff_Exp(double FLT_SurfaceFlow, double FLT_BuildupMass)
         {
             return FLT_Kw * Math.Pow(FLT_SurfaceFlow, FLT_Nw) * FLT_BuildupMass;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="FLT_SurfaceFlow"></param>
+        /// Surface Flow computed from hydrological model. Unit: mm
+        /// <param name="FLT_WatershedArea"></param>
+        /// Area of the watershed. Should be input after considering land use fractions. Unit: km²
+        /// <returns></returns>
         public double Washoff_Rating(double FLT_SurfaceFlow, double FLT_WatershedArea)
         {
-            return FLT_Kw * Math.Pow(FLT_SurfaceFlow * FLT_WatershedArea, FLT_Nw);
+            return FLT_Kw * Math.Pow(1000*FLT_SurfaceFlow * FLT_WatershedArea, FLT_Nw);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="FLT_SurfaceFlow"></param>
+        /// Surface Flow computed from hydrological model. Unit: mm
+        /// <param name="FLT_WatershedArea"></param>
+        /// Area of the watershed. Should be input after considering land use fractions. Unit: km²
+        /// <returns></returns>
         public double Washoff_EMC(double FLT_SurfaceFlow, double FLT_WatershedArea)
         {
             return FLT_Kw * FLT_SurfaceFlow * FLT_WatershedArea;
         }
-
+        #endregion Washoff Equations
 
 
 
@@ -181,6 +216,23 @@ namespace Plash
                     Math.Round(FLT_BuildupTime, 3),
                     i);
             }
+        }
+
+        public static Buildup_Washoff Aggregate(List<Buildup_Washoff> lstUses, double FLT_WatershedArea)
+        {
+
+            List<double> AverageBuildupSeries = new List<double>();
+            List<double> AverageWashoffSeries = new List<double>();
+
+            for(int i = 0; i < lstUses[0].FLT_Arr_Buildup.Length; i++)
+            {
+                
+
+            }
+
+
+
+            return new Buildup_Washoff();
         }
 
 
