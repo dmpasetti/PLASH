@@ -208,32 +208,41 @@ namespace Plash
                     }
                 }
                 Sim.FLT_Arr_Buildup[i] = FLT_BuildupMass;
-                Console.WriteLine("i: {5}, Bool_Buildup: {0}, BuildupRate: {1}, Buildup Total: {2}, Washoff: {3}, Time: {4}", 
-                    BOOL_Buildup, 
-                    Math.Round(FLT_BuildupSpecific,3), 
-                    Math.Round(FLT_BuildupMass, 3),
-                    Math.Round(Sim.FLT_Arr_Washoff[i], 3),
-                    Math.Round(FLT_BuildupTime, 3),
-                    i);
+                //Console.WriteLine("i: {5}, Bool_Buildup: {0}, BuildupRate: {1}, Buildup Total: {2}, Washoff: {3}, Time: {4}", 
+                //    BOOL_Buildup, 
+                //    Math.Round(FLT_BuildupSpecific,3), 
+                //    Math.Round(FLT_BuildupMass, 3),
+                //    Math.Round(Sim.FLT_Arr_Washoff[i], 3),
+                //    Math.Round(FLT_BuildupTime, 3),
+                //    i);
             }
         }
 
-        public static Buildup_Washoff Aggregate(List<Buildup_Washoff> lstUses, double FLT_WatershedArea)
-        {
+        //public static Buildup_Washoff Aggregate(List<Buildup_Washoff> lstUses, double FLT_WatershedArea)
+        //{
 
-            List<double> AverageBuildupSeries = new List<double>();
-            List<double> AverageWashoffSeries = new List<double>();
+        //    List<double> AverageBuildupSeries = new List<double>();
+        //    List<double> AverageWashoffSeries = new List<double>();
 
-            for(int i = 0; i < lstUses[0].FLT_Arr_Buildup.Length; i++)
-            {
+        //    for(int i = 0; i < lstUses[0].FLT_Arr_Buildup.Length; i++)
+        //    {
+        //        double AvgBuildup;
+        //        double AvgWashoff;
+        //        for(int j = 0; j < lstUses.Count; j++)
+        //        {
+        //            AvgBuildup += 
+        //        }
+
+        //    }
+        //    List<double> lstTempBuildup = 
+        //    for(int i = 0; i < lstUses.Count; i++)
+        //    {
                 
-
-            }
-
+        //    }
 
 
-            return new Buildup_Washoff();
-        }
+        //    return new Buildup_Washoff();
+        //}
 
 
 

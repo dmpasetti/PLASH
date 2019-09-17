@@ -10,8 +10,7 @@ using OfficeOpenXml;
 
 namespace Plash
 {   
-
-
+    
     class Program
     {
 
@@ -22,27 +21,64 @@ namespace Plash
             Console.WriteLine("Hello World!");
             Console.ReadKey();
 
+            #region Excel Input
+            FileInfo InputFile = new FileInfo(@"D:\InputPLASH.xlsx");
+            List<double> InputPrecip = new List<double>();
+            List<double> InputQObs = new List<double>();
+            List<double> InputEvap = new List<double>();
+            using (ExcelPackage package = new ExcelPackage(InputFile))
+            {
+                ExcelWorksheet worksheet = package.Workbook.Worksheets[1];
+                int ColCount = worksheet.Dimension.End.Column;
+                int RowCount = worksheet.Dimension.End.Row;
+                for(int row = 2; row <= RowCount; row++)
+                {
+                    InputPrecip.Add(Convert.ToDouble(worksheet.Cells[row, 2].Value));
+                    InputQObs.Add(Convert.ToDouble(worksheet.Cells[row, 3].Value));
+                    InputEvap.Add(Convert.ToDouble(worksheet.Cells[row, 4].Value));
+                    
+
+                    //Console.WriteLine("Precip: {0}, Evap: {1}, QObos: {2}", Math.Round(InputPrecip[row - 2],3), Math.Round(InputQObs[row - 2],3), Math.Round(InputEvap[row - 2],3));
+                }
+
+            }
+
+
+            #endregion Excel Input
+            
+
+            #region PLASH Simulation
+
             PLASH Sim = new PLASH();
 
-            int SimulationLength = 100;
+            int SimulationLength = InputPrecip.Count;
             Sim.DTE_Arr_TimeSeries = new DateTime[SimulationLength];
             
             Sim.DTE_Arr_TimeSeries[0] = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
-            Console.WriteLine("Data Inicial: {0}", Sim.DTE_Arr_TimeSeries[0]);
+            //Console.WriteLine("Data Inicial: {0}", Sim.DTE_Arr_TimeSeries[0]);
             for(int i = 1; i < Sim.DTE_Arr_TimeSeries.Length; i++)
             {
                 Sim.DTE_Arr_TimeSeries[i] = Sim.DTE_Arr_TimeSeries[0].AddHours(Sim.FLT_TimeStep * i);
                 //Console.WriteLine("i: {0}, Data: {1}", i, Sim.DTE_Arr_TimeSeries[i]);
             }
 
+            Sim.FLT_Arr_QtObsSeries = InputQObs.ToArray();
+            Sim.FLT_Arr_PrecipSeries = InputPrecip.ToArray();
+            Sim.FLT_Arr_EPSeries = InputEvap.ToArray();
+
+            Sim.FLT_TimeStep = 24;
+
             PLASH.Run(Sim, SimulationLength);
             
             
             
 
-            Console.WriteLine("");
-            Console.ReadKey();
+            //Console.WriteLine("");
+            //Console.ReadKey();
 
+            #endregion PLASH Simulation
+
+            #region Buwo Simulation
             Buildup_Washoff BuWoModel = new Buildup_Washoff
             {
                 FLT_BMax = 10,
@@ -56,8 +92,9 @@ namespace Plash
 
             //double[] FLT_Arr_WashoffResults = BuWoModel.fncBuildupWashoffProcess(Sim.FLT_Arr_PrecipSeries, Sim.FLT_Arr_ESSup, Sim.FLT_AD, 0, 2, 1, Sim.FLT_TimeStep);
 
-            Console.ReadKey();
+            //Console.ReadKey();
 
+            #endregion Buwo Simulation
 
             #region Excel Output
             using (ExcelPackage excel = new ExcelPackage())
@@ -117,12 +154,11 @@ namespace Plash
             Console.WriteLine("Excel processed");
 
             #endregion Excel Output
-
+    
             Console.ReadKey();
 
 
 
-            // Go to http://aka.ms/dotnet-get-started-console to continue learning how to build a console app! 
         }
     }
 }

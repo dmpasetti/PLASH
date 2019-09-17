@@ -12,9 +12,9 @@ namespace Plash
 
         //Series Inputs
         public DateTime[] DTE_Arr_TimeSeries;
-        public double[] FLT_Arr_PrecipSeries = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.8, 0.2, 0.2, 0.8, 0.8, 1.4, 1, 5, 3.8, 2.6, 1.8, 1, 1, 1.8, 0.4, 1.6, 5.4, 7, 5.6, 3, 6.6, 5.2, 4.6, 5.4, 5, 6.8, 7.8, 8.4, 7.8, 8.6, 6.2, 3, 1.8, 6, 12.4, 6.2, 2.2, 2, 2.8, 1, 1, 0.6, 1.2, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-        public double[] FLT_Arr_EPSeries = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
-        public double[] FLT_Arr_QtObsSeries = { 1.457, 1.174, 1.052, 1.054, 1.147, 1.159, 1.067, 1.131, 1.159, 1.248, 1.323, 1.381, 1.409, 1.368, 1.397, 1.427, 1.427, 1.414, 1.381, 1.422, 1.381, 1.381, 1.464, 1.562, 1.755, 1.848, 1.936, 2.14, 2.054, 2.23, 2.646, 4.876, 7.524, 9.872, 12.405, 15.05, 16.37, 17.808, 18.506, 20.065, 22.038, 24.759, 26.728, 27.982, 28.024, 25.961, 22.174, 21.46, 26.11, 29.513, 29.202, 26.018, 21.255, 17.54, 15.265, 12.94, 11.815, 9.886, 8.652, 7.921, 6.646, 5.869, 5.612, 4.946, 4.396, 4.265, 4.645, 5.239, 4.657, 4.326, 4.394, 4.14, 3.877, 3.132, 2.198, 2.565, 2.275, 2.311, 2.402, 2.208, 2.128, 2.168, 2.556, 2.669, 2.653, 2.745, 2.498, 2.33, 2.554, 2.588, 2.62, 2.323, 2.236, 2.404, 2.363, 2.586, 2.107, 2.013, 1.85, 1.727 };
+        public double[] FLT_Arr_PrecipSeries; //= { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.8, 0.2, 0.2, 0.8, 0.8, 1.4, 1, 5, 3.8, 2.6, 1.8, 1, 1, 1.8, 0.4, 1.6, 5.4, 7, 5.6, 3, 6.6, 5.2, 4.6, 5.4, 5, 6.8, 7.8, 8.4, 7.8, 8.6, 6.2, 3, 1.8, 6, 12.4, 6.2, 2.2, 2, 2.8, 1, 1, 0.6, 1.2, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        public double[] FLT_Arr_EPSeries; //= { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1 };
+        public double[] FLT_Arr_QtObsSeries; //= { 1.457, 1.174, 1.052, 1.054, 1.147, 1.159, 1.067, 1.131, 1.159, 1.248, 1.323, 1.381, 1.409, 1.368, 1.397, 1.427, 1.427, 1.414, 1.381, 1.422, 1.381, 1.381, 1.464, 1.562, 1.755, 1.848, 1.936, 2.14, 2.054, 2.23, 2.646, 4.876, 7.524, 9.872, 12.405, 15.05, 16.37, 17.808, 18.506, 20.065, 22.038, 24.759, 26.728, 27.982, 28.024, 25.961, 22.174, 21.46, 26.11, 29.513, 29.202, 26.018, 21.255, 17.54, 15.265, 12.94, 11.815, 9.886, 8.652, 7.921, 6.646, 5.869, 5.612, 4.946, 4.396, 4.265, 4.645, 5.239, 4.657, 4.326, 4.394, 4.14, 3.877, 3.132, 2.198, 2.565, 2.275, 2.311, 2.402, 2.208, 2.128, 2.168, 2.556, 2.669, 2.653, 2.745, 2.498, 2.33, 2.554, 2.588, 2.62, 2.323, 2.236, 2.404, 2.363, 2.586, 2.107, 2.013, 1.85, 1.727 };
 
         //Reservoirs
         public double[] FLT_Arr_RImp; //Impervious Reservoir Level
@@ -69,22 +69,22 @@ namespace Plash
         //Parameters
         public double FLT_TimeStep = 1;
         public double FLT_AD = 18.5;    //Watershed Area (km2)
-        public double FLT_AI = 0.05;     //Impervious Area Fraction (km2/km2)
+        public double FLT_AI = 0.02;     //Impervious Area Fraction (km2/km2)
         public double FLT_DI = 5;       //Maximum Impervious Detention (mm)
-        public double FLT_AP = 0.9;    //Pervious Area Fraction (km2/km2)
+        public double FLT_AP = 0.95;    //Pervious Area Fraction (km2/km2)
         public double FLT_IP = 3;       //Maximum Interception (mm)
         public double FLT_DP = 6;       //Maximum Pervious Detention (mm)
         public double FLT_KSup = 12;    //Surface Reservoir Decay (h)
-        public double FLT_CS = 10;      //Soi Saturation Capacity (mm)
+        public double FLT_CS = 10;      //Soil Saturation Capacity (mm)
         public double FLT_CC = 0.3;     //Field Capacity (%)
-        public double FLT_CR = 0.05;    //Recharge Capacity (%)
+        public double FLT_CR = 0.1;    //Recharge Capacity (%)
         public double FLT_PP = 0.02;    //Deep Percolation (mm/h)
-        public double FLT_KSub = 180;   //Aquifer Reservoir Decay (d)
+        public double FLT_KSub = 100;   //Aquifer Reservoir Decay (d)
         public double FLT_KCan = 2;     //Channel Reservoir Decay (h)
         public double FLT_CH = 0.05;    //Hydraulic Conductivity (mm/h)
         public double FLT_FS = 50;      //Soil Capilarity Factor (mm)
-        public double FLT_PS = 0.5;     //Soil Porosity (cm3/cm3)
-        public double FLT_UI = 0.495;     //Initial Moisture (cm3/cm3)
+        public double FLT_PS = 0.8;     //Soil Porosity (cm3/cm3)
+        public double FLT_UI = 0.6;     //Initial Moisture (cm3/cm3)
 
         public double FLT_kSup;
         public double FLT_kSub;
@@ -160,19 +160,19 @@ namespace Plash
             Sim.AuxiliaryParameters();
             Sim.SetArrays(INT_SimulationLength);
 
-            Console.WriteLine("Parametros Originais:");
-            Console.WriteLine("KSup = {0}", Sim.FLT_KSup);
-            Console.WriteLine("KSub = {0}", Sim.FLT_KSub);
-            Console.WriteLine("KCan = {0}", Sim.FLT_KCan);
-            Console.WriteLine("PP = {0}", Sim.FLT_PP);
+            //Console.WriteLine("Parametros Originais:");
+            //Console.WriteLine("KSup = {0}", Sim.FLT_KSup);
+            //Console.WriteLine("KSub = {0}", Sim.FLT_KSub);
+            //Console.WriteLine("KCan = {0}", Sim.FLT_KCan);
+            //Console.WriteLine("PP = {0}", Sim.FLT_PP);
 
-            Console.WriteLine("Parametros Auxiliares:");
-            Console.WriteLine("kSup = {0}", Sim.FLT_kSup);
-            Console.WriteLine("kSub = {0}", Sim.FLT_kSub);
-            Console.WriteLine("kCan = {0}", Sim.FLT_kCan);
-            Console.WriteLine("pp = {0}", Sim.FLT_pp);
+            //Console.WriteLine("Parametros Auxiliares:");
+            //Console.WriteLine("kSup = {0}", Sim.FLT_kSup);
+            //Console.WriteLine("kSub = {0}", Sim.FLT_kSub);
+            //Console.WriteLine("kCan = {0}", Sim.FLT_kCan);
+            //Console.WriteLine("pp = {0}", Sim.FLT_pp);
 
-            Console.ReadKey();
+            //Console.ReadKey();
 
             double RImp0 = 0;
             double RInt0 = 0;
@@ -190,6 +190,10 @@ namespace Plash
 
             for (int i = 0; i < INT_SimulationLength; i++)
             {
+                if (i == 25)
+                {
+                    var dummy = "breakpoint";
+                }
                 
                 #region Impervious Reservoir
                 //Impervious Reservoir                
@@ -243,11 +247,11 @@ namespace Plash
 
                 if (FLT_it1 > FLT_Puddling)
                 {
-                    Sim.FLT_Arr_Infiltration_Cumulative[i] = (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i];
+                    Sim.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + Sim.FLT_Arr_EESup[i] - Sim.FLT_Arr_ERSup[i],0);
                 }
                 else
                 {
-                    Sim.FLT_Arr_Infiltration_Cumulative[i] = (FLT_S2 * (-1 - FLT_W_1)) / (2 * Sim.FLT_CH);
+                    Sim.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((FLT_S2 * (-1 - FLT_W_1)) / (2 * Sim.FLT_CH),0);
                 }
                 Sim.FLT_Arr_Infiltration[i] = Math.Max(Sim.FLT_Arr_Infiltration_Cumulative[i] - (i > 0 ? Sim.FLT_Arr_Infiltration_Cumulative[i - 1] : 0), 0);                
                 //END Infiltration
@@ -323,7 +327,7 @@ namespace Plash
                 //Console.WriteLine("EESol: {0}, EPSol: {1}, ERSol: {2}, ESSol: {3}, RSol: {4}", Sim.FLT_Arr_EESol[i], Sim.FLT_Arr_EPSol[i], Sim.FLT_Arr_ERSol[i], Sim.FLT_Arr_ESSol[i], Sim.FLT_Arr_RSol[i]);
                 //Console.WriteLine("EESub: {0}, PPSub: {1}, ESSub: {2}, RSub: {3}, QSub: {4}", Sim.FLT_Arr_EESub[i], Sim.FLT_Arr_PPSub[i], Sim.FLT_Arr_ESSub[i], Sim.FLT_Arr_RSub[i], Sim.FLT_Arr_ESSub[i] * (Sim.FLT_AD / (3.6 * Sim.FLT_TimeStep)));
                 //Console.WriteLine("EECan: {0}, ERCan: {1}, ESCan: {2}, RCan: {3}", Sim.FLT_Arr_EECan[i], Sim.FLT_Arr_ERCan[i], Sim.FLT_ARR_ESCan[i], Sim.FLT_Arr_RCan[i]);
-                Console.WriteLine("QBas: {0}, QSup: {1}, Qt: {2}", Math.Round(Sim.FLT_Arr_QBas_Calc[i], 3), Math.Round(Sim.FLT_Arr_QSup_Calc[i], 3), Math.Round(Sim.FLT_Arr_Qt_Calc[i], 3));
+                //Console.WriteLine("QBas: {0}, QSup: {1}, Qt: {2}", Math.Round(Sim.FLT_Arr_QBas_Calc[i], 3), Math.Round(Sim.FLT_Arr_QSup_Calc[i], 3), Math.Round(Sim.FLT_Arr_Qt_Calc[i], 3));
                 //Console.WriteLine("Diferenca Absoluta:{0}", Math.Round(Sim.FLT_Arr_Qt_Calc[i] - Sim.FLT_Arr_QtObsSeries[i], 3));
                 //Console.WriteLine("Precip: {0}, Surface Flow: {1}", Sim.FLT_Arr_PrecipSeries[i], Sim.FLT_Arr_ESSup[i]);
                 #endregion Results Output
