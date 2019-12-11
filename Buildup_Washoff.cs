@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Plash
 {
-    class Buildup_Washoff
+    public class Buildup_Washoff
     {
         public double FLT_BMax; //Maximum Buildup, normalized (kg/km²)
         public double FLT_Nb; //Buildup Exponent  (-). Nb <= 1 
