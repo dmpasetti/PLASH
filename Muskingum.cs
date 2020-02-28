@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Plash
+namespace PlashClasses
 {
     public class Muskingum
     {
@@ -33,7 +33,7 @@ namespace Plash
 
         private bool ValidParameters()
         {
-            if(FLT_X >= 1)
+            if(FLT_X > 0.5)
             {
                 return false;
             }
@@ -75,6 +75,10 @@ namespace Plash
             }
             else
             {                
+                for(int i = 0; i < Sim.FLT_Arr_InputFlow.Length; i++)
+                {
+                    Outflow[i] = double.PositiveInfinity;
+                }
                 return Outflow;
             }
         }

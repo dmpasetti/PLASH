@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Plash
+namespace PlashClasses
 {
     public class PLASH
     {
@@ -43,6 +43,7 @@ namespace Plash
         public double[] FLT_Arr_TP;
         public double[] FLT_Arr_IAEAdim;
         public double[] FLT_Arr_TPAdim;
+        
 
         //Shallow Soil Reservoir
         public double[] FLT_Arr_EPSol; //Potential Evapotranspiration
@@ -184,6 +185,7 @@ namespace Plash
             _Res.FLT_Arr_TP = new double[length];
             _Res.FLT_Arr_IAEAdim = new double[length];
             _Res.FLT_Arr_TPAdim = new double[length];
+            _Res.FLT_Arr_SoilMoisture = new double[length];
 
             _Res.FLT_Arr_EPSol = new double[length];
             _Res.FLT_Arr_EESol = new double[length];
@@ -397,7 +399,7 @@ namespace Plash
 
         }
 
-        public static void Run(PLASHInput _In, PLASHParameters _Param, PLASHReservoir _Res, PLASHOutput _Out)
+        public static void Run(PLASHInput _In, PLASHParameters _Param, PLASHInitialConditions Res0, PLASHReservoir _Res, PLASHOutput _Out)
         {
             int INT_SimulationLength = _In.FLT_Arr_QtObsSeries.Length;
             AuxiliaryParameters(_Param);
@@ -417,12 +419,12 @@ namespace Plash
 
             //Console.ReadKey();
 
-            double RImp0 = 0;
-            double RInt0 = 0;
-            double RSup0 = 0;
+            double RImp0 = Res0.RImp0;
+            double RInt0 = Res0.RInt0;
+            double RSup0 = Res0.RSup0;
             double RSol0 = _Param.FLT_UI * _Param.FLT_CS;
             double RSub0 = (_In.FLT_Arr_QtObsSeries[0] / (1 - _Param.FLT_kSub)) * (3.6 / _Param.FLT_AD);
-            double RCan0 = 0;
+            double RCan0 = Res0.RCan0;
 
             _Res.FLT_Arr_RImp[0] = RImp0;
             _Res.FLT_Arr_RInt[0] = RInt0;
@@ -430,6 +432,8 @@ namespace Plash
             _Res.FLT_Arr_RSol[0] = RSol0;
             _Res.FLT_Arr_RSub[0] = RSub0;
             _Res.FLT_Arr_RCan[0] = RCan0;
+            _Res.FLT_Arr_SoilMoisture[0] = _Param.FLT_UI;
+
 
             for (int i = 0; i < INT_SimulationLength; i++)
             {
@@ -464,42 +468,84 @@ namespace Plash
 
 
                 //Infiltration
-                double FLT_S2 = 2 * _Param.FLT_CH * (_Param.FLT_PS - _Param.FLT_UI) * (_Param.FLT_FS + (i > 0 ? _Res.FLT_Arr_RSup[i - 1] : RSup0) + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i]);
+
+
+                double FLT_S2 = 2 * _Param.FLT_CH * (_Param.FLT_PS - ( i > 0 ? _Res.FLT_Arr_SoilMoisture[i-1] : _Param.FLT_UI )) * (_Param.FLT_FS + (i > 0 ? _Res.FLT_Arr_RSup[i - 1] : RSup0) + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i]);
+                //double FLT_S2 = 2 * _Param.FLT_CH * (_Param.FLT_PS - _Param.FLT_UI) * (_Param.FLT_FS + (i > 0 ? _Res.FLT_Arr_RSup[i - 1] : RSup0) + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i]);
                 double FLT_it = (FLT_S2 / (2 * (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0))) + _Param.FLT_CH;
                 double FLT_it1 = (FLT_S2 / (2 * ((i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + _In.FLT_Arr_PrecipSeries[i]))) + _Param.FLT_CH;
-                double FLT_Puddling = (_Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i]) / _Param.FLT_TimeStep;
+                double FLT_Puddling = Math.Max((_Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i]) / _Param.FLT_TimeStep, 0);
+                
 
-                //if (double.IsInfinity(FLT_it) || double.IsInfinity(FLT_it1))
+                //if (FLT_it <= FLT_Puddling)
                 //{
-                //    var dummy = 43756982765;
+                //    _Res.FLT_Arr_IAE[i] = i > 0 ? _Res.FLT_Arr_IAE[i - 1] : 0;
+                //    _Res.FLT_Arr_TP[i] = 0;
                 //}
+                //if (FLT_it1 < FLT_Puddling)
+                //{
+                //    _Res.FLT_Arr_IAE[i] = FLT_S2 / (2 * (FLT_Puddling - _Param.FLT_CH));
+                //    _Res.FLT_Arr_TP[i] = (_Res.FLT_Arr_IAE[i] - (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0)) / FLT_Puddling;
+                //}
+                //_Res.FLT_Arr_IAEAdim[i] = 2 * _Param.FLT_CH * _Res.FLT_Arr_IAE[i] / FLT_S2;
+                //_Res.FLT_Arr_TPAdim[i] = 2 * Math.Pow(_Param.FLT_CH, 2) * (_Param.FLT_TimeStep - _Res.FLT_Arr_TP[i]) / FLT_S2;
 
-                if (FLT_it <= FLT_Puddling)
-                {
-                    _Res.FLT_Arr_IAE[i] = i > 0 ? _Res.FLT_Arr_IAE[i - 1] : 0;
-                    _Res.FLT_Arr_TP[i] = 0;
-                }
-                if (FLT_it1 < FLT_Puddling)
-                {
-                    _Res.FLT_Arr_IAE[i] = FLT_S2 / (2 * (FLT_Puddling - _Param.FLT_CH));
-                    _Res.FLT_Arr_TP[i] = (_Res.FLT_Arr_IAE[i] - (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0)) / FLT_Puddling;
-                }
-                _Res.FLT_Arr_IAEAdim[i] = 2 * _Param.FLT_CH * _Res.FLT_Arr_IAE[i] / FLT_S2;
-                _Res.FLT_Arr_TPAdim[i] = 2 * Math.Pow(_Param.FLT_CH, 2) * (_Param.FLT_TimeStep - _Res.FLT_Arr_TP[i]) / FLT_S2;
-                double FLT_Sigma = Math.Sqrt(2 * (_Res.FLT_Arr_TPAdim[i] + _Res.FLT_Arr_IAEAdim[i] - Math.Log(1 + _Res.FLT_Arr_IAEAdim[i])));
-                double FLT_Sigma_1 = (Math.Pow(FLT_Sigma, 2) / 2);
-                double FLT_Sigma_2 = Math.Pow((1 + FLT_Sigma / 6), -1);
-                double FLT_W_1 = (FLT_Sigma_1 + Math.Log(1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2)) / (Math.Pow((1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2), -1) - 1);
 
-                if (FLT_it1 > FLT_Puddling)
+                //double FLT_Sigma = Math.Sqrt(2 * (_Res.FLT_Arr_TPAdim[i] + _Res.FLT_Arr_IAEAdim[i] - Math.Log(1 + _Res.FLT_Arr_IAEAdim[i])));
+                //double FLT_Sigma_1 = (Math.Pow(FLT_Sigma, 2) / 2);
+                //double FLT_Sigma_2 = Math.Pow((1 + FLT_Sigma / 6), -1);
+                //double FLT_W_1 = (FLT_Sigma_1 + Math.Log(1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2)) / (Math.Pow((1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2), -1) - 1);
+
+                //if (FLT_it1 > FLT_Puddling)
+                //{
+                //    _Res.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i], 0);
+                //}
+                //else
+                //{
+                //    _Res.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((FLT_S2 * (-1 - FLT_W_1)) / (2 * _Param.FLT_CH), 0);
+                //}
+                //_Res.FLT_Arr_Infiltration[i] = Math.Max(_Res.FLT_Arr_Infiltration_Cumulative[i] - (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0), 0);
+
+                //Infiltration v2
+                if(FLT_it1 > FLT_Puddling)
                 {
                     _Res.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0) + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i], 0);
                 }
                 else
                 {
-                    _Res.FLT_Arr_Infiltration_Cumulative[i] = Math.Max((FLT_S2 * (-1 - FLT_W_1)) / (2 * _Param.FLT_CH), 0);
+                    if (FLT_it <= FLT_Puddling)
+                    {
+                        _Res.FLT_Arr_IAE[i] = i > 0 ? _Res.FLT_Arr_IAE[i - 1] : 0;
+                        _Res.FLT_Arr_TP[i] = 0;
+                    }
+                    else if (FLT_it1 <= FLT_Puddling)
+                    {
+                        _Res.FLT_Arr_IAE[i] = FLT_S2 / (2 * (FLT_Puddling - _Param.FLT_CH));                        
+                        _Res.FLT_Arr_TP[i] = (_Res.FLT_Arr_IAE[i] - (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0)) / FLT_Puddling;
+                    }
+
+                    if (double.IsInfinity(_Res.FLT_Arr_TP[i]))
+                    {
+                        Console.WriteLine("Error: TP is infinity. i = ", i);
+                    }
+
+                    //if (_Res.FLT_Arr_TP[i] < 0 || double.IsNaN(_Res.FLT_Arr_TP[i]) || double.IsInfinity(_Res.FLT_Arr_TP[i]))
+                    //{
+                    //    Console.WriteLine("Error: TP < 0. i = {0}", i);
+                    //    var dummy = true;
+                    //}
+                    _Res.FLT_Arr_IAEAdim[i] = 2 * _Param.FLT_CH * _Res.FLT_Arr_IAE[i] / FLT_S2;
+                    _Res.FLT_Arr_TPAdim[i] = 2 * Math.Pow(_Param.FLT_CH, 2) * (_Param.FLT_TimeStep - _Res.FLT_Arr_TP[i]) / FLT_S2;
+
+
+                    double FLT_Sigma = Math.Sqrt(2 * (_Res.FLT_Arr_TPAdim[i] + _Res.FLT_Arr_IAEAdim[i] - Math.Log(1 + _Res.FLT_Arr_IAEAdim[i])));
+                    double FLT_Sigma_1 = (Math.Pow(FLT_Sigma, 2) / 2);
+                    double FLT_Sigma_2 = Math.Pow((1 + FLT_Sigma / 6), -1);
+                    double FLT_W_1 = (FLT_Sigma_1 + Math.Log(1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2)) / (Math.Pow((1 + FLT_Sigma_1 + FLT_Sigma * FLT_Sigma_2), -1) - 1);
+
                 }
                 _Res.FLT_Arr_Infiltration[i] = Math.Max(_Res.FLT_Arr_Infiltration_Cumulative[i] - (i > 0 ? _Res.FLT_Arr_Infiltration_Cumulative[i - 1] : 0), 0);
+
                 //END Infiltration
                 #endregion Infiltration
 
@@ -508,9 +554,15 @@ namespace Plash
                 {
                     _Res.FLT_Arr_RSup[i] = _Res.FLT_Arr_RSup[i - 1] + _Res.FLT_Arr_EESup[i] - _Res.FLT_Arr_ERSup[i] - _Res.FLT_Arr_Infiltration[i] - _Res.FLT_Arr_ESSup[i];
                 }
+
+                if (double.IsNaN(_Res.FLT_Arr_ESSup[i]) || double.IsInfinity(_Res.FLT_Arr_ESSup[i]))
+                {
+                    Console.WriteLine("MASSIVE ERROR IN SURFACE FLOW!", i);
+                }
+
                 #endregion Surface Reservoir
 
-
+                
                 #region Soil Reservoir
                 //Soil Reservoir
                 _Res.FLT_Arr_EESol[i] = _Res.FLT_Arr_Infiltration[i];
@@ -521,6 +573,9 @@ namespace Plash
                 {
                     _Res.FLT_Arr_RSol[i] = _Res.FLT_Arr_RSol[i - 1] + _Res.FLT_Arr_EESol[i] - _Res.FLT_Arr_ERSol[i] - _Res.FLT_Arr_ESSol[i];
                 }
+
+                _Res.FLT_Arr_SoilMoisture[i] = _Res.FLT_Arr_RSol[i] / _Param.FLT_CS;
+
                 #endregion Soil Reservoir
 
                 #region Aquifer Reservoir
@@ -654,6 +709,7 @@ namespace Plash
         public double[] FLT_Arr_TP;
         public double[] FLT_Arr_IAEAdim;
         public double[] FLT_Arr_TPAdim;
+        public double[] FLT_Arr_SoilMoisture;
 
         //Shallow Soil Reservoir
         public double[] FLT_Arr_EPSol; //Potential Evapotranspiration
@@ -674,6 +730,14 @@ namespace Plash
 
     }
 
+
+    public class PLASHInitialConditions
+    {
+        public double RImp0;
+        public double RInt0;
+        public double RSup0;
+        public double RCan0;
+    }
 
 
     public class PLASHOutput
